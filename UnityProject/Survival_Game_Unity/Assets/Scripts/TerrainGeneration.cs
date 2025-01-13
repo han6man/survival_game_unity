@@ -17,10 +17,11 @@ public class TerrainGeneration : MonoBehaviour
     [SerializeField] private int maxTreeHeight = 6;
 
     [Header("Generation Settings")]
+    public int chunkSize = 16;
+    [SerializeField] private int worldSize = 100;
     [SerializeField] private bool generateCaves = true;
     [SerializeField] private int dirtLayerHeight = 5;
     [SerializeField] private float surfaceValue = 0.25f;
-    [SerializeField] private int worldSize = 100;
     [SerializeField] private float heightMultiplier = 25.0f;
     [SerializeField] private int heightAddition = 25;
 
@@ -30,13 +31,29 @@ public class TerrainGeneration : MonoBehaviour
     [SerializeField] private float seed;
     [SerializeField] private Texture2D noiseTexture;
 
+    private GameObject[] worldChunks;
     private List<Vector2> worldTiles = new List<Vector2>();
 
     private void Start()
     {
         seed = Random.Range(-10000, 10000);
         GenerateNoiseTexture();
+        CreateChunks();
         GenerateTerrain();
+    }
+
+    public void CreateChunks()
+    {
+        int numChunks = worldSize / chunkSize;
+        worldChunks = new GameObject[numChunks];
+
+        for (int i = 0; i < numChunks; i++)
+        {
+            GameObject newChunk = new GameObject();
+            newChunk.name = i.ToString();
+            newChunk.transform.parent = this.transform;
+            worldChunks[i] = newChunk;
+        }
     }
 
     private void GenerateTerrain()
@@ -106,7 +123,7 @@ public class TerrainGeneration : MonoBehaviour
         noiseTexture.Apply();
     }
 
-    private void GenerateTree(float x, float y)
+    private void GenerateTree(int x, int y)
     {
         //define our tree
 
@@ -129,10 +146,14 @@ public class TerrainGeneration : MonoBehaviour
         PlaceTile(leaf, x + 1, y + treeHeight + 1);
     }
 
-    private void PlaceTile(Sprite tileSprite, float x, float y)
+    private void PlaceTile(Sprite tileSprite, int x, int y)
     {
         GameObject newTile = new GameObject();
-        newTile.transform.parent = this.transform;
+        float chunkCoord = (Mathf.Round(x / chunkSize) * chunkSize);
+        chunkCoord /= chunkSize;
+        
+        newTile.transform.parent = worldChunks[(int)chunkCoord].transform;
+
         newTile.AddComponent<SpriteRenderer>();
         newTile.GetComponent<SpriteRenderer>().sprite = tileSprite;
         newTile.name = tileSprite.name;
