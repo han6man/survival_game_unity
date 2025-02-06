@@ -1,0 +1,16 @@
+{
+    "name": "SpaceInvaders.GamePlay",
+    "rootNamespace": "SpaceInvaders.GamePlay",
+    "references": [
+        "GUID:b2ea1d46c2bc7f84a98c5a50b9b3875a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
