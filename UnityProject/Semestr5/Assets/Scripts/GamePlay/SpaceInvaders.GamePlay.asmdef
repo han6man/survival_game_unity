@@ -1,8 +1,8 @@
 {
-    "name": "SpaceInvaders.GamePlay",
-    "rootNamespace": "SpaceInvaders.GamePlay",
+    "name": "SpaceInvaders.Gameplay",
+    "rootNamespace": "SpaceInvaders.Gameplay",
     "references": [
-        "GUID:b2ea1d46c2bc7f84a98c5a50b9b3875a"
+        "GUID:8e1f411bb4e118a41972b1db699c3bd1"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
