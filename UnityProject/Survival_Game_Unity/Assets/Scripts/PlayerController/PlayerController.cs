@@ -8,12 +8,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool onGround;
 
     private Rigidbody2D rb;
-    private SpriteRenderer spriteRenderer;
+    //private SpriteRenderer spriteRenderer;
+    private Animator anim;
+
+    private float horizontal;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        //spriteRenderer = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
     }
 
     private void OnTriggerStay2D(Collider2D col)
@@ -31,7 +35,7 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         // do stuff
-        float horizontal = Input.GetAxis("Horizontal");
+        horizontal = Input.GetAxis("Horizontal");
         float jump = Input.GetAxisRaw("Jump");
         float vertical = Input.GetAxisRaw("Vertical");
 
@@ -49,5 +53,10 @@ public class PlayerController : MonoBehaviour
         }
 
         rb.velocity = movement;
+    }
+
+    private void Update()
+    {
+        anim.SetFloat("horizontal", horizontal);
     }
 }
