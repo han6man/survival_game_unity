@@ -3,20 +3,22 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public Vector2 spawnPos;
+
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private bool onGround;
 
     private Rigidbody2D rb;
-    //private SpriteRenderer spriteRenderer;
     private Animator anim;
 
     private float horizontal;
 
-    private void Start()
+    public void Spawn()
     {
+        GetComponent<Transform>().position = spawnPos;
+
         rb = GetComponent<Rigidbody2D>();
-        //spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
     }
 
