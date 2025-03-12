@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class TerrainGeneration : MonoBehaviour
 {
+    [SerializeField] private PlayerController player;
+    [SerializeField] private CamController mainCamera;
+    [SerializeField] private int tileSortingOrder = -5;
+
     [Header("Tile Atlas")]
     [SerializeField] private TileAtlas tileAtlas;
     [SerializeField] private float seed;
@@ -48,6 +52,11 @@ public class TerrainGeneration : MonoBehaviour
 
         CreateChunks();
         GenerateTerrain();
+
+        mainCamera.Spawn(new Vector3(player.spawnPos.x, player.spawnPos.y, mainCamera.transform.position.z));
+        mainCamera.worldSize = worldSize;
+
+        player.Spawn();
     }
 
     private void DrawBiomeMap()
@@ -186,6 +195,8 @@ public class TerrainGeneration : MonoBehaviour
             {
                 curBiome = GetCurentBiome(x, y);
                 height = Mathf.PerlinNoise((x + seed) * terrainFreq, seed * terrainFreq) * curBiome.heightMultiplier + heightAddition;
+                if (x == worldSize / 2)
+                    player.spawnPos = new Vector2(x, height + 2);
 
                 if (y >= height)
                     break;
@@ -217,12 +228,12 @@ public class TerrainGeneration : MonoBehaviour
                 {
                     if (caveNoiseTexture.GetPixel(x, y).r > 0.5f)
                     {
-                        PlaceTile(tileSprites, x, y);
+                        PlaceTile(tileSprites, x, y, false);
                     }
                 }
                 else
                 {
-                    PlaceTile(tileSprites, x, y);
+                    PlaceTile(tileSprites, x, y, false);
                 }
 
 
@@ -256,7 +267,7 @@ public class TerrainGeneration : MonoBehaviour
                             {
                                 if (curBiome.tileAtlas.tallGrass != null)
                                 {
-                                    PlaceTile(curBiome.tileAtlas.tallGrass.tileSprites, x, y + 1);
+                                    PlaceTile(curBiome.tileAtlas.tallGrass.tileSprites, x, y + 1, true);
                                 }
                             }
                         }
@@ -273,7 +284,7 @@ public class TerrainGeneration : MonoBehaviour
         //generate log
         for (int i = 0; i < treeHeight; i++)
         {
-            PlaceTile(atlas.log.tileSprites, x, y + i);
+            PlaceTile(atlas.log.tileSprites, x, y + i, true);
         }
     }
 
@@ -284,24 +295,24 @@ public class TerrainGeneration : MonoBehaviour
         //generate log
         for (int i = 0; i < treeHeight; i++)
         {
-            PlaceTile(tileAtlas.log.tileSprites, x, y + i);
+            PlaceTile(tileAtlas.log.tileSprites, x, y + i, true);
         }
 
         //generate leaves
-        PlaceTile(tileAtlas.leaf.tileSprites, x, y + treeHeight);
-        PlaceTile(tileAtlas.leaf.tileSprites, x, y + treeHeight + 1);
-        PlaceTile(tileAtlas.leaf.tileSprites, x, y + treeHeight + 2);
+        PlaceTile(tileAtlas.leaf.tileSprites, x, y + treeHeight, true);
+        PlaceTile(tileAtlas.leaf.tileSprites, x, y + treeHeight + 1, true);
+        PlaceTile(tileAtlas.leaf.tileSprites, x, y + treeHeight + 2, true);
 
-        PlaceTile(tileAtlas.leaf.tileSprites, x - 1, y + treeHeight);
-        PlaceTile(tileAtlas.leaf.tileSprites, x - 1, y + treeHeight + 1);
+        PlaceTile(tileAtlas.leaf.tileSprites, x - 1, y + treeHeight, true);
+        PlaceTile(tileAtlas.leaf.tileSprites, x - 1, y + treeHeight + 1, true);
 
-        PlaceTile(tileAtlas.leaf.tileSprites, x + 1, y + treeHeight);
-        PlaceTile(tileAtlas.leaf.tileSprites, x + 1, y + treeHeight + 1);
+        PlaceTile(tileAtlas.leaf.tileSprites, x + 1, y + treeHeight, true);
+        PlaceTile(tileAtlas.leaf.tileSprites, x + 1, y + treeHeight + 1, true);
     }
 
-    private void PlaceTile(Sprite[] tileSprites, int x, int y)
+    private void PlaceTile(Sprite[] tileSprites, int x, int y, bool backgroundElement)
     {
-        if (!worldTiles.Contains(new Vector2Int(x, y)))
+        if (!worldTiles.Contains(new Vector2Int(x, y)) && x >= 0 && x <= worldSize && y >= 0 && y <= worldSize)
         {
             GameObject newTile = new GameObject();
             int chunkCoord = Mathf.RoundToInt(Mathf.Round(x / chunkSize) * chunkSize);
@@ -310,9 +321,17 @@ public class TerrainGeneration : MonoBehaviour
             newTile.transform.parent = worldChunks[chunkCoord].transform;
 
             newTile.AddComponent<SpriteRenderer>();
+            if (!backgroundElement)
+            {
+                newTile.AddComponent<BoxCollider2D>();
+                newTile.GetComponent<BoxCollider2D>().size = Vector2.one;
+                newTile.tag = "Ground";
+            }
 
             int spriteIndex = Random.Range(0, tileSprites.Length);
             newTile.GetComponent<SpriteRenderer>().sprite = tileSprites[spriteIndex];
+            newTile.GetComponent<SpriteRenderer>().sortingOrder = tileSortingOrder;
+
             newTile.name = tileSprites[0].name;
             newTile.transform.position = new Vector2(x + 0.5f, y + 0.5f);
 
