@@ -33,6 +33,8 @@ public class TerrainGeneration : MonoBehaviour
     [SerializeField] private OreClass[] ores;
     private GameObject[] worldChunks;
     private List<Vector2> worldTiles = new List<Vector2>();
+    private List<GameObject> worldTileObjects = new List<GameObject>();
+
     private BiomeClass curBiome;
     private Color[] biomeCols;
 
@@ -310,6 +312,14 @@ public class TerrainGeneration : MonoBehaviour
         PlaceTile(tileAtlas.leaf.tileSprites, x + 1, y + treeHeight + 1, true);
     }
 
+    public void RemoveTile(int x, int y)
+    {
+        if (worldTiles.Contains(new Vector2Int(x, y)) && x >= 0 && x <= worldSize && y >= 0 && y <= worldSize)
+        {
+            Destroy(worldTileObjects[worldTiles.IndexOf(new Vector2(x, y))]);
+        }
+    }
+
     private void PlaceTile(Sprite[] tileSprites, int x, int y, bool backgroundElement)
     {
         if (!worldTiles.Contains(new Vector2Int(x, y)) && x >= 0 && x <= worldSize && y >= 0 && y <= worldSize)
@@ -336,6 +346,7 @@ public class TerrainGeneration : MonoBehaviour
             newTile.transform.position = new Vector2(x + 0.5f, y + 0.5f);
 
             worldTiles.Add(newTile.transform.position - (Vector3.one * 0.5f));
+            worldTileObjects.Add(newTile);
         }
     }
 }
