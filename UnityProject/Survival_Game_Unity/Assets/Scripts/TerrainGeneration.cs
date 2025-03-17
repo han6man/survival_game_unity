@@ -6,6 +6,7 @@ public class TerrainGeneration : MonoBehaviour
 {
     [SerializeField] private PlayerController player;
     [SerializeField] private CamController mainCamera;
+    [SerializeField] private GameObject tileDrop;
     [SerializeField] private int tileSortingOrderInBackground = -10;
     [SerializeField] private int tileSortingOrder = -5;
 
@@ -256,12 +257,12 @@ public class TerrainGeneration : MonoBehaviour
                 {
                     if (caveNoiseTexture.GetPixel(x, y).r > 0.5f)
                     {
-                        PlaceTile(tileClass, x, y, false);
+                        PlaceTile(tileClass, x, y);
                     }
                 }
                 else
                 {
-                    PlaceTile(tileClass, x, y, false);
+                    PlaceTile(tileClass, x, y);
                 }
 
 
@@ -295,7 +296,7 @@ public class TerrainGeneration : MonoBehaviour
                             {
                                 if (curBiome.tileAtlas.tallGrass != null)
                                 {
-                                    PlaceTile(curBiome.tileAtlas.tallGrass, x, y + 1, true);
+                                    PlaceTile(curBiome.tileAtlas.tallGrass, x, y + 1);
                                 }
                             }
                         }
@@ -312,7 +313,7 @@ public class TerrainGeneration : MonoBehaviour
         //generate log
         for (int i = 0; i < treeHeight; i++)
         {
-            PlaceTile(atlas.log, x, y + i, true);
+            PlaceTile(atlas.log, x, y + i);
         }
     }
 
@@ -323,19 +324,19 @@ public class TerrainGeneration : MonoBehaviour
         //generate log
         for (int i = 0; i < treeHeight; i++)
         {
-            PlaceTile(tileAtlas.log, x, y + i, true);
+            PlaceTile(tileAtlas.log, x, y + i);
         }
 
         //generate leaves
-        PlaceTile(tileAtlas.leaf, x, y + treeHeight, true);
-        PlaceTile(tileAtlas.leaf, x, y + treeHeight + 1, true);
-        PlaceTile(tileAtlas.leaf, x, y + treeHeight + 2, true);
+        PlaceTile(tileAtlas.leaf, x, y + treeHeight);
+        PlaceTile(tileAtlas.leaf, x, y + treeHeight + 1);
+        PlaceTile(tileAtlas.leaf, x, y + treeHeight + 2);
 
-        PlaceTile(tileAtlas.leaf, x - 1, y + treeHeight, true);
-        PlaceTile(tileAtlas.leaf, x - 1, y + treeHeight + 1, true);
+        PlaceTile(tileAtlas.leaf, x - 1, y + treeHeight);
+        PlaceTile(tileAtlas.leaf, x - 1, y + treeHeight + 1);
 
-        PlaceTile(tileAtlas.leaf, x + 1, y + treeHeight, true);
-        PlaceTile(tileAtlas.leaf, x + 1, y + treeHeight + 1, true);
+        PlaceTile(tileAtlas.leaf, x + 1, y + treeHeight);
+        PlaceTile(tileAtlas.leaf, x + 1, y + treeHeight + 1);
     }
 
     public void RemoveTile(int x, int y)
@@ -344,20 +345,27 @@ public class TerrainGeneration : MonoBehaviour
         {
             Destroy(worldTileObjects[worldTiles.IndexOf(new Vector2(x, y))]);
 
+            //drop tile
+            if (worldTileClasses[worldTiles.IndexOf(new Vector2(x, y))].tileDrop)
+            {
+                GameObject newTileDrop = Instantiate(tileDrop, new Vector2(x, y + 0.5f), Quaternion.identity);
+                newTileDrop.GetComponent<SpriteRenderer>().sprite = worldTileClasses[worldTiles.IndexOf(new Vector2(x, y))].tileSprites[0];
+            }
+
             worldTileObjects.RemoveAt(worldTiles.IndexOf(new Vector2(x, y)));
             worldTileClasses.RemoveAt(worldTiles.IndexOf(new Vector2(x, y)));
             worldTiles.RemoveAt(worldTiles.IndexOf(new Vector2(x, y)));
         }
     }
 
-    public void CheckTile(TileClass tile, int x, int y, bool backgroundElement)
+    public void CheckTile(TileClass tile, int x, int y)
     {
         if (x >= 0 && x <= worldSize && y >= 0 && y <= worldSize)
         {
             if (!worldTiles.Contains(new Vector2Int(x, y)))
             {
                 //place the tile regardless
-                PlaceTile(tile, x, y, backgroundElement);
+                PlaceTile(tile, x, y);
             }
             else
             {
@@ -365,14 +373,15 @@ public class TerrainGeneration : MonoBehaviour
                 {
                     //overwrite existing tile
                     RemoveTile(x, y);
-                    PlaceTile(tile, x, y, backgroundElement);
+                    PlaceTile(tile, x, y);
                 }
             }
         }
     }
 
-    public void PlaceTile(TileClass tile, int x, int y, bool backgroundElement)
+    public void PlaceTile(TileClass tile, int x, int y)
     {
+        bool backgroundElement = tile.inBackground;
         if (x >= 0 && x <= worldSize && y >= 0 && y <= worldSize)
         {            
             GameObject newTile = new GameObject();

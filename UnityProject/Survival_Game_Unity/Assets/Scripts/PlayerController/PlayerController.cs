@@ -62,7 +62,7 @@ public class PlayerController : MonoBehaviour
             }
             else if (place)
             {
-                terrainGenerator.CheckTile(selectedTile, mousePos.x, mousePos.y, false);
+                terrainGenerator.CheckTile(selectedTile, mousePos.x, mousePos.y);
             }
         }
 
