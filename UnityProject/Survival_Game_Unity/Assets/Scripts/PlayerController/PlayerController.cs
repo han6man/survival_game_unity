@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private Vector2Int mousePos;
-
     [HideInInspector]
     public Vector2 spawnPos;
     
@@ -12,12 +10,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpForce;
     [SerializeField] private bool onGround;
     [SerializeField] private TerrainGeneration terrainGenerator;
+    [SerializeField] private TileClass selectedTile;
+    [SerializeField] private int playerRange;
 
     private Rigidbody2D rb;
     private Animator anim;
 
+    private Vector2Int mousePos;
     private float horizontal;
     private bool hit;
+    private bool place;
 
     public void Spawn()
     {
@@ -49,9 +51,19 @@ public class PlayerController : MonoBehaviour
         Vector2 movement = new Vector2(horizontal * moveSpeed, rb.velocity.y);
 
         hit = Input.GetMouseButton(0);
-        if (hit)
+        place = Input.GetMouseButton(1);
+
+        if (Vector2.Distance(transform.position, mousePos) <= playerRange &&
+            Vector2.Distance(transform.position, mousePos) > 1f)
         {
-            terrainGenerator.RemoveTile(mousePos.x, mousePos.y);
+            if (hit)
+            {
+                terrainGenerator.RemoveTile(mousePos.x, mousePos.y);
+            }
+            else if (place)
+            {
+                terrainGenerator.CheckTile(selectedTile, mousePos.x, mousePos.y, false);
+            }
         }
 
         if (horizontal > 0)
@@ -75,6 +87,6 @@ public class PlayerController : MonoBehaviour
         mousePos.y = Mathf.RoundToInt(Camera.main.ScreenToWorldPoint(Input.mousePosition).y - 0.5f);
 
         anim.SetFloat("horizontal", horizontal);
-        anim.SetBool("hit", hit);
+        anim.SetBool("hit", hit || place);
     }
 }
