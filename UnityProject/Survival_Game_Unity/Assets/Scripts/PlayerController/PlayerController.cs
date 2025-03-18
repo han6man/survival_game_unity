@@ -50,9 +50,6 @@ public class PlayerController : MonoBehaviour
 
         Vector2 movement = new Vector2(horizontal * moveSpeed, rb.velocity.y);
 
-        hit = Input.GetMouseButton(0);
-        place = Input.GetMouseButton(1);
-
         if (Vector2.Distance(transform.position, mousePos) <= playerRange &&
             Vector2.Distance(transform.position, mousePos) > 1f)
         {
@@ -82,6 +79,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        hit = Input.GetMouseButton(0);
+        place = Input.GetMouseButton(1);
+
         //set mouse pos
         mousePos.x = Mathf.RoundToInt(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - 0.5f);
         mousePos.y = Mathf.RoundToInt(Camera.main.ScreenToWorldPoint(Input.mousePosition).y - 0.5f);

@@ -77,7 +77,7 @@ public class TerrainGeneration : MonoBehaviour
     {
         for (int i = 0; i < worldChunks.Length; i++)
         {
-            if (Vector2.Distance(new Vector2((i * chunkSize) + (chunkSize / 2), 0), new Vector2(player.transform.position.x, 0)) > Camera.main.orthographicSize * 4f)
+            if (Vector2.Distance(new Vector2((i * chunkSize) + (chunkSize / 2), 0), new Vector2(player.transform.position.x, 0)) > Camera.main.orthographicSize * 5f)
             {
                 worldChunks[i].SetActive(false);
             }
@@ -259,6 +259,10 @@ public class TerrainGeneration : MonoBehaviour
                     {
                         PlaceTile(tileClass, x, y);
                     }
+                    else if (tileClass.wallVariant != null)
+                    {
+                        PlaceTile(tileClass.wallVariant, x, y);
+                    }
                 }
                 else
                 {
@@ -343,6 +347,11 @@ public class TerrainGeneration : MonoBehaviour
     {
         if (worldTiles.Contains(new Vector2Int(x, y)) && x >= 0 && x <= worldSize && y >= 0 && y <= worldSize)
         {
+            if (worldTileClasses[worldTiles.IndexOf(new Vector2(x, y))].wallVariant != null)
+            {
+                PlaceTile(worldTileClasses[worldTiles.IndexOf(new Vector2(x, y))].wallVariant, x, y);
+            }
+            
             Destroy(worldTileObjects[worldTiles.IndexOf(new Vector2(x, y))]);
 
             //drop tile
@@ -406,6 +415,9 @@ public class TerrainGeneration : MonoBehaviour
                 newTile.GetComponent<SpriteRenderer>().sortingOrder = tileSortingOrderInBackground;
             else
                 newTile.GetComponent<SpriteRenderer>().sortingOrder = tileSortingOrder;
+
+            if (tile.name.ToUpper().Contains("WALL"))
+                newTile.GetComponent<SpriteRenderer>().color = new Color(0.6f, 0.6f, 0.6f);
 
             newTile.name = tile.tileSprites[0].name;
             newTile.transform.position = new Vector2(x + 0.5f, y + 0.5f);
