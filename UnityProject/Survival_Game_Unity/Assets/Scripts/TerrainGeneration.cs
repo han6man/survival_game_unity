@@ -257,16 +257,16 @@ public class TerrainGeneration : MonoBehaviour
                 {
                     if (caveNoiseTexture.GetPixel(x, y).r > 0.5f)
                     {
-                        PlaceTile(tileClass, x, y);
+                        PlaceTile(tileClass, x, y, true);
                     }
                     else if (tileClass.wallVariant != null)
                     {
-                        PlaceTile(tileClass.wallVariant, x, y);
+                        PlaceTile(tileClass.wallVariant, x, y, true);
                     }
                 }
                 else
                 {
-                    PlaceTile(tileClass, x, y);
+                    PlaceTile(tileClass, x, y, true);
                 }
 
 
@@ -300,7 +300,7 @@ public class TerrainGeneration : MonoBehaviour
                             {
                                 if (curBiome.tileAtlas.tallGrass != null)
                                 {
-                                    PlaceTile(curBiome.tileAtlas.tallGrass, x, y + 1);
+                                    PlaceTile(curBiome.tileAtlas.tallGrass, x, y + 1, true);
                                 }
                             }
                         }
@@ -317,7 +317,7 @@ public class TerrainGeneration : MonoBehaviour
         //generate log
         for (int i = 0; i < treeHeight; i++)
         {
-            PlaceTile(atlas.log, x, y + i);
+            PlaceTile(atlas.log, x, y + i, true);
         }
     }
 
@@ -328,37 +328,43 @@ public class TerrainGeneration : MonoBehaviour
         //generate log
         for (int i = 0; i < treeHeight; i++)
         {
-            PlaceTile(tileAtlas.log, x, y + i);
+            PlaceTile(tileAtlas.log, x, y + i, true);
         }
 
         //generate leaves
-        PlaceTile(tileAtlas.leaf, x, y + treeHeight);
-        PlaceTile(tileAtlas.leaf, x, y + treeHeight + 1);
-        PlaceTile(tileAtlas.leaf, x, y + treeHeight + 2);
+        PlaceTile(tileAtlas.leaf, x, y + treeHeight, true);
+        PlaceTile(tileAtlas.leaf, x, y + treeHeight + 1, true);
+        PlaceTile(tileAtlas.leaf, x, y + treeHeight + 2, true);
 
-        PlaceTile(tileAtlas.leaf, x - 1, y + treeHeight);
-        PlaceTile(tileAtlas.leaf, x - 1, y + treeHeight + 1);
+        PlaceTile(tileAtlas.leaf, x - 1, y + treeHeight, true);
+        PlaceTile(tileAtlas.leaf, x - 1, y + treeHeight + 1, true);
 
-        PlaceTile(tileAtlas.leaf, x + 1, y + treeHeight);
-        PlaceTile(tileAtlas.leaf, x + 1, y + treeHeight + 1);
+        PlaceTile(tileAtlas.leaf, x + 1, y + treeHeight, true);
+        PlaceTile(tileAtlas.leaf, x + 1, y + treeHeight + 1, true);
     }
 
     public void RemoveTile(int x, int y)
     {
+        TileClass tile = worldTileClasses[worldTiles.IndexOf(new Vector2(x, y))];
+
         if (worldTiles.Contains(new Vector2Int(x, y)) && x >= 0 && x <= worldSize && y >= 0 && y <= worldSize)
         {
-            if (worldTileClasses[worldTiles.IndexOf(new Vector2(x, y))].wallVariant != null)
+            if (tile.wallVariant != null)
             {
-                PlaceTile(worldTileClasses[worldTiles.IndexOf(new Vector2(x, y))].wallVariant, x, y);
+                //if the tile is naturally placed
+                if (tile.naturallyPlaced)
+                {
+                    PlaceTile(tile.wallVariant, x, y, true);
+                }                
             }
             
             Destroy(worldTileObjects[worldTiles.IndexOf(new Vector2(x, y))]);
 
             //drop tile
-            if (worldTileClasses[worldTiles.IndexOf(new Vector2(x, y))].tileDrop)
+            if (tile.tileDrop)
             {
                 GameObject newTileDrop = Instantiate(tileDrop, new Vector2(x, y + 0.5f), Quaternion.identity);
-                newTileDrop.GetComponent<SpriteRenderer>().sprite = worldTileClasses[worldTiles.IndexOf(new Vector2(x, y))].tileSprites[0];
+                newTileDrop.GetComponent<SpriteRenderer>().sprite = tile.tileSprites[0];
             }
 
             worldTileObjects.RemoveAt(worldTiles.IndexOf(new Vector2(x, y)));
@@ -367,14 +373,14 @@ public class TerrainGeneration : MonoBehaviour
         }
     }
 
-    public void CheckTile(TileClass tile, int x, int y)
+    public void CheckTile(TileClass tile, int x, int y, bool isNaturallyPlaced)
     {
         if (x >= 0 && x <= worldSize && y >= 0 && y <= worldSize)
         {
             if (!worldTiles.Contains(new Vector2Int(x, y)))
             {
                 //place the tile regardless
-                PlaceTile(tile, x, y);
+                PlaceTile(tile, x, y, isNaturallyPlaced);
             }
             else
             {
@@ -382,13 +388,20 @@ public class TerrainGeneration : MonoBehaviour
                 {
                     //overwrite existing tile
                     RemoveTile(x, y);
-                    PlaceTile(tile, x, y);
+                    PlaceTile(tile, x, y, isNaturallyPlaced);
                 }
             }
         }
     }
 
-    public void PlaceTile(TileClass tile, int x, int y)
+    private float GetLightLevel(int x, int y)
+    {
+        float lightLevel = 0;
+
+        return lightLevel;
+    }
+
+    public void PlaceTile(TileClass tile, int x, int y, bool isNaturallyPlaced)
     {
         bool backgroundElement = tile.inBackground;
         if (x >= 0 && x <= worldSize && y >= 0 && y <= worldSize)
@@ -421,6 +434,8 @@ public class TerrainGeneration : MonoBehaviour
 
             newTile.name = tile.tileSprites[0].name;
             newTile.transform.position = new Vector2(x + 0.5f, y + 0.5f);
+
+            tile.naturallyPlaced = isNaturallyPlaced;
 
             worldTiles.Add(newTile.transform.position - (Vector3.one * 0.5f));
             worldTileObjects.Add(newTile);
