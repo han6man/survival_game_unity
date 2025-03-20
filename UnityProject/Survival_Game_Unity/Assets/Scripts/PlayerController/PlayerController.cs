@@ -69,22 +69,24 @@ public class PlayerController : MonoBehaviour
         hit = Input.GetMouseButtonDown(0);
         place = Input.GetMouseButton(1);
 
+        //set mouse pos
+        mousePos.x = Mathf.RoundToInt(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - 0.5f);
+        mousePos.y = Mathf.RoundToInt(Camera.main.ScreenToWorldPoint(Input.mousePosition).y - 0.5f);
+
         if (Vector2.Distance(transform.position, mousePos) <= playerRange &&
             Vector2.Distance(transform.position, mousePos) > 1f)
         {
-            if (hit)
-            {
-                terrainGenerator.RemoveTile(mousePos.x, mousePos.y);
-            }
-            else if (place)
+            if (place)
             {
                 terrainGenerator.CheckTile(selectedTile, mousePos.x, mousePos.y, false);
             }
         }
-
-        //set mouse pos
-        mousePos.x = Mathf.RoundToInt(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - 0.5f);
-        mousePos.y = Mathf.RoundToInt(Camera.main.ScreenToWorldPoint(Input.mousePosition).y - 0.5f);
+        
+        if (Vector2.Distance(transform.position, mousePos) <= playerRange)
+        {
+            if (hit)
+                terrainGenerator.RemoveTile(mousePos.x, mousePos.y);
+        }
 
         anim.SetFloat("horizontal", horizontal);
         anim.SetBool("hit", hit || place);
