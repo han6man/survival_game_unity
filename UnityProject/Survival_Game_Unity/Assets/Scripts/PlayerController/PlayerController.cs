@@ -21,12 +21,15 @@ public class PlayerController : MonoBehaviour
     private bool hit;
     private bool place;
 
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+    }
+
     public void Spawn()
     {
         GetComponent<Transform>().position = spawnPos;
-
-        rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
     }
 
     private void OnTriggerStay2D(Collider2D col)
@@ -44,7 +47,6 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         // do stuff
-        horizontal = Input.GetAxis("Horizontal");
         float jump = Input.GetAxisRaw("Jump");
         float vertical = Input.GetAxisRaw("Vertical");
 
@@ -66,6 +68,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        horizontal = Input.GetAxis("Horizontal");
         hit = Input.GetMouseButtonDown(0);
         place = Input.GetMouseButton(1);
 
@@ -85,7 +88,9 @@ public class PlayerController : MonoBehaviour
         if (Vector2.Distance(transform.position, mousePos) <= playerRange)
         {
             if (hit)
+            {
                 terrainGenerator.RemoveTile(mousePos.x, mousePos.y);
+            }
         }
 
         anim.SetFloat("horizontal", horizontal);
