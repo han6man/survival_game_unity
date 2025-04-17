@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "new Tool Class", menuName = "Item/Tool")]
+[CreateAssetMenu(fileName = "new Tool Class", menuName = "Item/Tool/Tool")]
 public class ToolClass : ItemClass
 {
     [Header("Tool")]//data specific to Tool class
@@ -14,23 +14,14 @@ public class ToolClass : ItemClass
         axe
     }
 
-    public override ItemClass GetItem()
+    public override void Use(PlayerController caller)
     {
-        return this;
+        base.Use(caller);
+        Debug.Log("Swing Tool");
     }
 
     public override ToolClass GetTool()
     {
         return this;
-    }
-
-    public override MiscClass GetMisc()
-    {
-        return null;
-    }
-
-    public override ConsumableClass GetConsumable()
-    {
-        return null;
     }
 }

@@ -4,23 +4,14 @@ using UnityEngine;
 public class MiscClass : ItemClass
 {
     //data specific to Misc class
-    public override ItemClass GetItem()
-    {
-        return this;
-    }
 
-    public override ToolClass GetTool()
+    public override void Use(PlayerController caller)
     {
-        return null;
+        //base.Use(caller);
     }
 
     public override MiscClass GetMisc()
     {
         return this;
-    }
-
-    public override ConsumableClass GetConsumable()
-    {
-        return null;
     }
 }

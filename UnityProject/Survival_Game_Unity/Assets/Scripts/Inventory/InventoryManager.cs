@@ -174,7 +174,7 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
-    private bool Remove(ItemClass item)
+    public bool Remove(ItemClass item)
     {
         SlotClass temp = Contains(item);
         if (temp != null)
@@ -204,6 +204,12 @@ public class InventoryManager : MonoBehaviour
 
         RefreshUI();
         return true;
+    }
+
+    public void UseSelected()
+    {
+        inventoryItems[selectedSlotIndex + (inventorySlots.Length - hotbarSlots.Length)].SubQuantity(1);
+        RefreshUI();
     }
 
     private SlotClass Contains(ItemClass item)

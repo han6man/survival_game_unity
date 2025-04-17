@@ -1,14 +1,19 @@
 using UnityEngine;
 
-public abstract class ItemClass : ScriptableObject
+public class ItemClass : ScriptableObject
 {
     [Header("Item")]//data shared across every item
     public string itemName;
     public Sprite itemIcon;
     public bool isStackable = true;
 
-    public abstract ItemClass GetItem();
-    public abstract ToolClass GetTool();
-    public abstract MiscClass GetMisc();
-    public abstract ConsumableClass GetConsumable();
+    public virtual void Use(PlayerController caller)
+    {
+        Debug.Log("Used Item");
+    }
+
+    public virtual ItemClass GetItem() {  return this; }
+    public virtual ToolClass GetTool() { return null; }
+    public virtual MiscClass GetMisc() { return null; }
+    public virtual ConsumableClass GetConsumable() { return null; }
 }
