@@ -1,5 +1,7 @@
 using UnityEngine;
-
+/// <summary>
+/// Items Parent Class
+/// </summary>
 public class ItemClass : ScriptableObject
 {
     [Header("Item")]//data shared across every item

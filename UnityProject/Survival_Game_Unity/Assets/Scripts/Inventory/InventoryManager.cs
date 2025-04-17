@@ -1,9 +1,14 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+/// <summary>
+/// Inventory Management Class
+/// </summary>
 public class InventoryManager : MonoBehaviour
 {
+    [SerializeField] private GameObject tileDrop;
+    [SerializeField] private GameObject player;
+
     [SerializeField] private GameObject itemCursor;
     [SerializeField] private GameObject hotbarSelector;
     [SerializeField] private GameObject inventorySlotHolder;
@@ -259,8 +264,14 @@ public class InventoryManager : MonoBehaviour
         originalSlot = GetClosestSlot();
         if (originalSlot == null)
         {
+            int quantityToDrop = movingSlot.GetQuantity();
             //droping out where
-            Add(movingSlot.GetItem(), movingSlot.GetQuantity());
+            for (int i = 0; i < quantityToDrop; i++)
+            {
+                DropItem();
+            }
+
+            //Add(movingSlot.GetItem(), movingSlot.GetQuantity());
             movingSlot.Clear();
         }
         else
@@ -301,25 +312,32 @@ public class InventoryManager : MonoBehaviour
     private bool EndItemMove_Single()
     {
         originalSlot = GetClosestSlot();
-        if (originalSlot == null)
-            return false; //there is not item to move!
-        if (originalSlot.GetItem() != null && originalSlot.GetItem() != movingSlot.GetItem())
-            return false;
 
-        if (originalSlot.GetItem() != null && originalSlot.GetItem() == movingSlot.GetItem())
+        if (originalSlot == null)
         {
-            if (movingSlot.GetItem().isStackable)
-            {
-                originalSlot.AddQuantity(1);
-                movingSlot.SubQuantity(1);
-            }
-            else
-                return false;
+            DropItem();
+            movingSlot.SubQuantity(1);
         }
         else
         {
-            originalSlot.AddItem(movingSlot.GetItem(), 1);
-            movingSlot.SubQuantity(1);
+            if (originalSlot.GetItem() != null && originalSlot.GetItem() != movingSlot.GetItem())
+                return false;
+
+            if (originalSlot.GetItem() != null && originalSlot.GetItem() == movingSlot.GetItem())
+            {
+                if (movingSlot.GetItem().isStackable)
+                {
+                    originalSlot.AddQuantity(1);
+                    movingSlot.SubQuantity(1);
+                }
+                else
+                    return false;
+            }
+            else
+            {
+                originalSlot.AddItem(movingSlot.GetItem(), 1);
+                movingSlot.SubQuantity(1);
+            }
         }
 
         if (movingSlot.GetQuantity() < 1)
@@ -345,6 +363,14 @@ public class InventoryManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    private void DropItem()
+    {
+        GameObject newTileDrop = Instantiate(tileDrop, new Vector2(player.transform.position.x + 2f, player.transform.position.y + 2f), Quaternion.identity);
+        newTileDrop.GetComponent<SpriteRenderer>().sprite = movingSlot.GetItem().itemIcon;
+        newTileDrop.GetComponent<TileDropController>().SetInventoryItem(movingSlot.GetItem());
+        newTileDrop.GetComponent<TileDropController>().SetInventory(this);
     }
     #endregion Moving Stuff
 }

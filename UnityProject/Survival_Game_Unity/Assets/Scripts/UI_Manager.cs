@@ -1,5 +1,7 @@
 using UnityEngine;
-
+/// <summary>
+/// UI Management Class
+/// </summary>
 public class UI_Manager : MonoBehaviour
 {
     [SerializeField] private GameObject inventoryPanel;

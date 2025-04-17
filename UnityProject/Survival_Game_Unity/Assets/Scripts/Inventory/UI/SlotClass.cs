@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
-
+/// <summary>
+/// Slots Class For Inventory
+/// </summary>
 [Serializable]
 public class SlotClass
 {
