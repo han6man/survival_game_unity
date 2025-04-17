@@ -1,5 +1,7 @@
 using UnityEngine;
-
+/// <summary>
+/// Basic Class For Misc Items
+/// </summary>
 [CreateAssetMenu(fileName = "new Misc Class", menuName = "Item/Misc")]
 public class MiscClass : ItemClass
 {

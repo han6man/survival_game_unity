@@ -1,5 +1,7 @@
 using UnityEngine;
-
+/// <summary>
+/// Player Control Class
+/// </summary>
 public class PlayerController : MonoBehaviour
 {
     [HideInInspector]

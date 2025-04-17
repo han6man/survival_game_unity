@@ -1,9 +1,16 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/// <summary>
+/// Game World Generation Class
+/// </summary>
 public class TerrainGeneration : MonoBehaviour
 {
+    [SerializeField] private PlayerController player;
+    [SerializeField] private CamController mainCamera;
+    [SerializeField] private GameObject tileDrop;
+    [SerializeField] private int tileSortingOrderInBackground = -10;
+    [SerializeField] private int tileSortingOrder = -5;
+
     [Header("Lighting")]
     [SerializeField] private Texture2D worldTilesMap;
     [SerializeField] private Material lightShader;
@@ -11,12 +18,6 @@ public class TerrainGeneration : MonoBehaviour
     [SerializeField] private float airLightThreshold = 0.85f;
     [SerializeField] private float lightRadius = 7f;
     private List<Vector2Int> unlitBlocks = new List<Vector2Int>();
-
-    [SerializeField] private PlayerController player;
-    [SerializeField] private CamController mainCamera;
-    [SerializeField] private GameObject tileDrop;
-    [SerializeField] private int tileSortingOrderInBackground = -10;
-    [SerializeField] private int tileSortingOrder = -5;
 
     [Header("Tile Atlas")]
     [SerializeField] private TileAtlas tileAtlas;
@@ -406,6 +407,8 @@ public class TerrainGeneration : MonoBehaviour
             {
                 GameObject newTileDrop = Instantiate(tileDrop, new Vector2(x, y + 0.5f), Quaternion.identity);
                 newTileDrop.GetComponent<SpriteRenderer>().sprite = tile.tileDrop;
+                newTileDrop.GetComponent<TileDropController>().SetInventoryItem(tile.inventoryItem);
+                newTileDrop.GetComponent<TileDropController>().SetInventory(player.inventory);
             }
 
             if (!GetTileFromWorld(x, y))

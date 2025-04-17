@@ -1,5 +1,7 @@
 using UnityEngine;
-
+/// <summary>
+/// Consumable Items Class
+/// </summary>
 [CreateAssetMenu(fileName = "new Consumable Class", menuName = "Item/Consumable")]
 public class ConsumableClass : ItemClass
 {

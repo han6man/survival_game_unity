@@ -1,6 +1,7 @@
-using System.Collections;
 using UnityEngine;
-
+/// <summary>
+/// Tile Data For Game World Generation Class
+/// </summary>
 [CreateAssetMenu(fileName = "newtileclass", menuName = "Tile Class")]
 public class TileClass : ScriptableObject
 {
@@ -10,6 +11,7 @@ public class TileClass : ScriptableObject
     public bool inBackground = false;
     public Sprite tileDrop;
     public bool naturallyPlaced = true;
+    public ItemClass inventoryItem;
 
     public static TileClass CreateInstance(TileClass tile, bool isNaturallyPlaced)
     {
@@ -26,6 +28,7 @@ public class TileClass : ScriptableObject
         tileSprites = tile.tileSprites;
         inBackground = tile.inBackground;
         tileDrop = tile.tileDrop;
+        inventoryItem = tile.inventoryItem;
         naturallyPlaced = isNaturallyPlaced;
     }
 }
