@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -12,6 +11,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private TerrainGeneration terrainGenerator;
     [SerializeField] private TileClass selectedTile;
     [SerializeField] private int playerRange;
+
+    public InventoryManager inventory;
 
     private Rigidbody2D rb;
     private Animator anim;
@@ -95,5 +96,12 @@ public class PlayerController : MonoBehaviour
 
         anim.SetFloat("horizontal", horizontal);
         anim.SetBool("hit", hit || place);
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            //Use the item
+            if (inventory.selectedItem != null)
+                inventory.selectedItem.Use(this);
+        }
     }
 }
