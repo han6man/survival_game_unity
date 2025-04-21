@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +7,10 @@ using UnityEngine.UI;
 /// </summary>
 public class InventoryManager : MonoBehaviour
 {
+    //in reality you want to load these recipes from a resources folder using:
+    //Resources.LoadAll<CraftingRecipeClass>()
+    [SerializeField] private List<CraftingRecipeClass> craftingRecipes = new List<CraftingRecipeClass>();
+
     [SerializeField] private GameObject tileDrop;
     [SerializeField] private GameObject player;
 
@@ -63,6 +68,7 @@ public class InventoryManager : MonoBehaviour
         Add(itemToAdd, 1);
         
         Remove(itemToRemove);
+        Remove(itemToRemove, 2);
     }
 
     private void Update()
@@ -105,6 +111,24 @@ public class InventoryManager : MonoBehaviour
         }
         hotbarSelector.transform.position = hotbarSlots[selectedSlotIndex].transform.position;
         selectedItem = inventoryItems[selectedSlotIndex + (inventorySlots.Length - hotbarSlots.Length)].GetItem();
+
+        if (Input.GetKeyDown(KeyCode.C)) //handle crafting
+        {
+            Craft(craftingRecipes[0]);
+        }
+    }
+
+    private void Craft(CraftingRecipeClass recipe)
+    {
+        if (recipe.CanCraft(this))
+        {
+            recipe.Craft(this);
+        }
+        else
+        {
+            //show error msg
+            Debug.Log("Can't craft that item!");
+        }
     }
 
     #region Inventory Utils
@@ -184,8 +208,40 @@ public class InventoryManager : MonoBehaviour
         SlotClass temp = Contains(item);
         if (temp != null)
         {
-            if (temp.GetQuantity() > 1)
+            if (temp.GetQuantity() >= 1)
                 temp.SubQuantity(1);
+            else
+            {
+                int slotToRemoveIndex = 0;
+
+                for (int i = 0; i < inventoryItems.Length; i++)
+                {
+                    if (inventoryItems[i].GetItem() == item)
+                    {
+                        slotToRemoveIndex = i;
+                        break;
+                    }
+                }
+
+                inventoryItems[slotToRemoveIndex].Clear();
+            }
+        }
+        else
+        {
+            return false;
+        }
+
+        RefreshUI();
+        return true;
+    }
+
+    public bool Remove(ItemClass item, int quantity)
+    {
+        SlotClass temp = Contains(item);
+        if (temp != null)
+        {
+            if (temp.GetQuantity() >= quantity)
+                temp.SubQuantity(quantity);
             else
             {
                 int slotToRemoveIndex = 0;
@@ -217,6 +273,19 @@ public class InventoryManager : MonoBehaviour
         RefreshUI();
     }
 
+    public bool IsFull()
+    {
+        for (int i = 0; i < inventoryItems.Length; i++)
+        {
+            if (inventoryItems[i].GetItem() == null)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private SlotClass Contains(ItemClass item)
     {
         for (int i = 0; i < inventoryItems.Length; i++)
@@ -227,6 +296,18 @@ public class InventoryManager : MonoBehaviour
 
         return null;
     }
+
+    public bool Contains(ItemClass item, int quantity)
+    {
+        for (int i = 0; i < inventoryItems.Length; i++)
+        {
+            if (inventoryItems[i].GetItem() == item && inventoryItems[i].GetQuantity() >= quantity)
+                return true;
+        }
+
+        return false;
+    }
+
     #endregion Inventory Utils
 
     #region Moving Stuff
