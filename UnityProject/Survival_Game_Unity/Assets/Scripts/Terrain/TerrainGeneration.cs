@@ -479,10 +479,19 @@ public class TerrainGeneration : MonoBehaviour
         {
             if (tile.inBackground)
             {
-                if (!GetTileFromWorld(x, y).inBackground)
+                if (!GetTileFromWorld(x, y))
                 {
                     RemoveLightSource(x, y);
                     PlaceTile(tile, x, y, isNaturallyPlaced);
+                }
+                else
+                {
+                    if (!GetTileFromWorld(x, y).inBackground)
+                    {
+                        //check this
+                        RemoveLightSource(x, y);
+                        PlaceTile(tile, x, y, isNaturallyPlaced);
+                    }
                 }
             }
             else

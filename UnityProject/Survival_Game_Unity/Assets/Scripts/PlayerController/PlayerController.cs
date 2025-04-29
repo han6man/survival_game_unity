@@ -4,9 +4,12 @@ using UnityEngine;
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
+
     [HideInInspector]
     public Vector2 spawnPos;
-    
+
+    [SerializeField] private GameObject handHolder;
+
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private bool onGround;
@@ -73,7 +76,7 @@ public class PlayerController : MonoBehaviour
     {
         horizontal = Input.GetAxis("Horizontal");
         hit = Input.GetMouseButtonDown(0);
-        place = Input.GetMouseButton(1);
+        place = Input.GetMouseButtonDown(1);
 
         //set mouse pos
         mousePos.x = Mathf.RoundToInt(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - 0.5f);
@@ -82,9 +85,10 @@ public class PlayerController : MonoBehaviour
         if (Vector2.Distance(transform.position, mousePos) <= playerRange &&
             Vector2.Distance(transform.position, mousePos) > 1f)
         {
-            if (place)
+            if (place && inventory.selectedItem != null && inventory.selectedItem.itemType == ItemClass.ItemType.Block)
             {
-                terrainGenerator.CheckTile(selectedTile, mousePos.x, mousePos.y, false);
+                terrainGenerator.CheckTile(inventory.selectedItem.tile, mousePos.x, mousePos.y, false);
+                inventory.Remove(inventory.selectedItem, 1);
             }
         }
         
@@ -99,6 +103,23 @@ public class PlayerController : MonoBehaviour
 
         anim.SetFloat("horizontal", horizontal);
         anim.SetBool("hit", hit || place);
+
+        if (inventory.selectedItem != null)
+        {
+            handHolder.GetComponent<SpriteRenderer>().sprite = inventory.selectedItem.itemIcon;
+            if (inventory.selectedItem.itemType == ItemClass.ItemType.Block)
+            {
+                handHolder.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
+            }
+            else
+            {
+                handHolder.transform.localScale = new Vector3(-1, 1, 1);
+            }
+        }
+        else
+        {
+            handHolder.GetComponent<SpriteRenderer>().sprite = null;
+        }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
