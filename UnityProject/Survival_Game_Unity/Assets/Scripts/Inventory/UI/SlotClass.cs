@@ -14,7 +14,6 @@ public class SlotClass
         this.item = null;
         this.quantity = 0;
     }
-
     public SlotClass(ItemClass _item, int _quantity)
     {
         this.item = _item;

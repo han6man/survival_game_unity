@@ -18,6 +18,10 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private GameObject hotbarSelector;
     [SerializeField] private GameObject inventorySlotHolder;
     [SerializeField] private GameObject hotbarSlotHolder;
+
+    [SerializeField] private ToolClass start_Pickaxe;
+    [SerializeField] private ToolClass start_Axe;
+    [SerializeField] private ToolClass start_Hammer;
     [SerializeField] private ItemClass itemToAdd;
     [SerializeField] private ItemClass itemToRemove;
 
@@ -65,6 +69,9 @@ public class InventoryManager : MonoBehaviour
 
         RefreshUI();
 
+        Add(start_Pickaxe, 1);
+        Add(start_Axe, 1);
+        Add(start_Hammer, 1);
         Add(itemToAdd, 1);
         
         Remove(itemToRemove);

@@ -11,6 +11,7 @@ public class TileClass : ScriptableObject
     public bool inBackground = false;
     public Sprite tileDrop;
     public bool naturallyPlaced = true;
+    public ItemClass.ToolType toolToBreak;
     public ItemClass inventoryItem;
 
     public static TileClass CreateInstance(TileClass tile, bool isNaturallyPlaced)
@@ -28,6 +29,7 @@ public class TileClass : ScriptableObject
         tileSprites = tile.tileSprites;
         inBackground = tile.inBackground;
         tileDrop = tile.tileDrop;
+        toolToBreak = tile.toolToBreak;
         inventoryItem = tile.inventoryItem;
         naturallyPlaced = isNaturallyPlaced;
     }

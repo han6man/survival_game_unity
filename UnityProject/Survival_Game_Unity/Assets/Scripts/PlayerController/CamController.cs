@@ -12,6 +12,8 @@ public class CamController : MonoBehaviour
     private float orthoSize;
     [SerializeField] private float orthoSizeMultiplierLeft = 2.88f;
     [SerializeField] private float orthoSizeMultiplierRight = 2.98f;
+    [SerializeField] private float orthoSizeMultiplierTop = 1f;
+    [SerializeField] private float orthoSizeMultiplierBottom = 1f;
     public void Spawn(Vector3 pos)
     {
         GetComponent<Transform>().position = pos;
@@ -25,9 +27,8 @@ public class CamController : MonoBehaviour
         pos.x = Mathf.Lerp(pos.x, playerTransform.position.x, smoothTime);
         pos.y = Mathf.Lerp(pos.y, playerTransform.position.y, smoothTime);
 
-        //2.365f
         pos.x = Mathf.Clamp(pos.x, 0 + (orthoSize * orthoSizeMultiplierLeft), worldSize - (orthoSize * orthoSizeMultiplierRight));
-
+        pos.y = Mathf.Clamp(pos.y, 0 + (orthoSize * orthoSizeMultiplierBottom), worldSize - (orthoSize * orthoSizeMultiplierTop));
         GetComponent<Transform>().position = pos;
     }
 }

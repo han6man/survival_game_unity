@@ -92,7 +92,8 @@ public class PlayerController : MonoBehaviour
         {
             if (hit)
             {
-                terrainGenerator.RemoveTile(mousePos.x, mousePos.y);
+                //terrainGenerator.RemoveTile(mousePos.x, mousePos.y);
+                terrainGenerator.BreakTile(mousePos.x, mousePos.y, inventory.selectedItem);              
             }
         }
 

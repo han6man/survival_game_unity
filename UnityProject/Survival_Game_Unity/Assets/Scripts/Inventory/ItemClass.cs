@@ -4,10 +4,29 @@ using UnityEngine;
 /// </summary>
 public class ItemClass : ScriptableObject
 {
+    public enum ItemType
+    {
+        None,
+        Block,
+        Tool
+    }
+
+    public enum ToolType
+    {
+        None,
+        Weapon,
+        Pickaxe,
+        Hammer,
+        Axe
+    }
+
     [Header("Item")]//data shared across every item
+    public ItemType itemType = ItemType.None;
+    public ToolType toolType = ToolType.None;
     public string itemName;
     public Sprite itemIcon;
     public bool isStackable = true;
+    public TileClass tile;
 
     public virtual void Use(PlayerController caller)
     {
