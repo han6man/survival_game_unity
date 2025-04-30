@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public Vector2 spawnPos;
 
     [SerializeField] private GameObject handHolder;
+    [SerializeField] private LayerMask layerMask;
 
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
@@ -63,10 +64,18 @@ public class PlayerController : MonoBehaviour
         else if (horizontal < 0)
             transform.localScale = new Vector3(1, 1, 1);
 
+        //Jumping
         if (vertical > 0.1f || jump > 0.1f)
         {
             if (onGround)
                 movement.y = jumpForce;
+        }
+
+        //Autojumping
+        if (FootRaycast() && !HeadRaycast() && movement.x != 0)
+        {
+            if (onGround)
+                movement.y = jumpForce * 0.6f;//jump multiplier for autojumping
         }
 
         rb.velocity = movement;
@@ -127,5 +136,25 @@ public class PlayerController : MonoBehaviour
             if (inventory.selectedItem != null)
                 inventory.selectedItem.Use(this);
         }
+    }
+
+    /*
+    private void OnValidate()
+    {
+        Debug.DrawRay(transform.position - (Vector3.up * 0.5f), -Vector2.right * transform.localScale.x, Color.white, 10f);
+        Debug.DrawRay(transform.position + (Vector3.up * 0.5f), -Vector2.right * transform.localScale.x, Color.white, 10f);
+    }
+    */
+
+    private bool FootRaycast()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position - (Vector3.up * 0.5f), -Vector2.right * transform.localScale.x, 1f/*ray length*/, layerMask);
+        return hit;
+    }
+
+    private bool HeadRaycast()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position + (Vector3.up * 0.5f), -Vector2.right * transform.localScale.x, 1f/*ray length*/, layerMask);
+        return hit;
     }
 }
