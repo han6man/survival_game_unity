@@ -14,6 +14,7 @@ public class TileAtlas : ScriptableObject
     public TileClass tallGrass;
     public TileClass snow;
     public TileClass sand;
+    public TileClass bedrock;
 
     [Header("Ores")]
     public TileClass coal;

@@ -11,6 +11,12 @@ public class TerrainGeneration : MonoBehaviour
     [SerializeField] private int tileSortingOrderInBackground = -10;
     [SerializeField] private int tileSortingOrder = -5;
 
+    [Header("World Borders")]
+    [SerializeField] private GameObject LeftBorder;
+    [SerializeField] private GameObject RightBorder;
+    [SerializeField] private GameObject TopBorder;
+    [SerializeField] private GameObject BottomBorder;
+
     [Header("Lighting")]
     [SerializeField] private Texture2D worldTilesMap;
     [SerializeField] private Material lightShader;
@@ -56,6 +62,8 @@ public class TerrainGeneration : MonoBehaviour
 
     private void Start()
     {
+        InitWorldBorders();
+
         world_ForegroundTiles = new TileClass[worldSize, worldSize];
         world_BackgroundTiles = new TileClass[worldSize, worldSize];
         world_ForegroundObjects = new GameObject[worldSize, worldSize];
@@ -82,7 +90,7 @@ public class TerrainGeneration : MonoBehaviour
         for (int i = 0; i < biomes.Length; i++)
         {
             biomeCols[i] = biomes[i].biomeCol;
-        }        
+        }
 
         //DrawTextures();
         DrawBiomeMap();
@@ -107,6 +115,21 @@ public class TerrainGeneration : MonoBehaviour
         player.Spawn();
 
         RefreshChunks();
+    }
+
+    private void InitWorldBorders()
+    {
+        LeftBorder.transform.localScale = new Vector3(1, worldSize, 1);
+        LeftBorder.transform.position = new Vector3(-0.5f, worldSize / 2, 0);
+
+        RightBorder.transform.localScale = new Vector3(1, worldSize, 1);
+        RightBorder.transform.position = new Vector3(worldSize - 0.5f, worldSize / 2, 0);
+
+        TopBorder.transform.localScale = new Vector3(worldSize + 1, 1, 1);
+        TopBorder.transform.position = new Vector3((worldSize / 2) - 0.5f, worldSize + 0.5f, 0);
+
+        BottomBorder.transform.localScale = new Vector3(worldSize + 1, 1, 1);
+        BottomBorder.transform.position = new Vector3((worldSize / 2) - 0.5f, -0.5f, 0);
     }
 
     private void Update()
@@ -264,6 +287,7 @@ public class TerrainGeneration : MonoBehaviour
             for (int y = 0; y < worldSize; y++)
             {
                 curBiome = GetCurentBiome(x, y);
+
                 height = Mathf.PerlinNoise((x + seed) * terrainFreq, seed * terrainFreq) * curBiome.heightMultiplier + heightAddition;
                 if (x == worldSize / 2)
                     player.spawnPos = new Vector2(x, height + 2);
@@ -294,7 +318,10 @@ public class TerrainGeneration : MonoBehaviour
                     tileClass = curBiome.tileAtlas.grass;
                 }
 
-                if (generateCaves)
+                if (y == 0)
+                    tileClass = tileAtlas.bedrock; //spawn first layer as bedrock
+
+                if (generateCaves && y > 0)
                 {
                     if (caveNoiseTexture.GetPixel(x, y).r > 0.5f)
                     {
@@ -386,7 +413,34 @@ public class TerrainGeneration : MonoBehaviour
         PlaceTile(tileAtlas.leaf, x + 1, y + treeHeight + 1, true);
     }
 
-    public void RemoveTile(int x, int y)
+    public bool BreakTile(int x, int y, ItemClass item)
+    {
+        if (GetTileFromWorld(x, y) && x >= 0 && x <= worldSize && y >= 0 && y <= worldSize)
+        {
+            TileClass tile = GetTileFromWorld(x, y);
+
+            if (tile.toolToBreak == ItemClass.ToolType.None)
+            {
+                RemoveTile(x, y);
+                return true;
+            }
+            else
+            {
+                if (item != null && item.itemType == ItemClass.ItemType.Tool)
+                {
+                    if (tile.toolToBreak == item.toolType)
+                    {
+                        RemoveTile(x, y);
+                        return true;
+                    }
+                }
+            }   
+        }
+
+        return false;
+    }
+
+    private void RemoveTile(int x, int y)
     {
         if (GetTileFromWorld(x, y) && x >= 0 && x <= worldSize && y >= 0 && y <= worldSize)
         {
@@ -406,7 +460,7 @@ public class TerrainGeneration : MonoBehaviour
             if (tile.tileDrop)
             {
                 GameObject newTileDrop = Instantiate(tileDrop, new Vector2(x, y + 0.5f), Quaternion.identity);
-                newTileDrop.GetComponent<SpriteRenderer>().sprite = tile.tileDrop;
+                newTileDrop.GetComponent<SpriteRenderer>().sprite = tile.tileDrop.tileSprites[0];
                 newTileDrop.GetComponent<TileDropController>().SetInventoryItem(tile.inventoryItem);
                 newTileDrop.GetComponent<TileDropController>().SetInventory(player.inventory);
             }
@@ -429,10 +483,19 @@ public class TerrainGeneration : MonoBehaviour
         {
             if (tile.inBackground)
             {
-                if (!GetTileFromWorld(x, y).inBackground)
+                if (!GetTileFromWorld(x, y))
                 {
                     RemoveLightSource(x, y);
                     PlaceTile(tile, x, y, isNaturallyPlaced);
+                }
+                else
+                {
+                    if (!GetTileFromWorld(x, y).inBackground)
+                    {
+                        //check this
+                        RemoveLightSource(x, y);
+                        PlaceTile(tile, x, y, isNaturallyPlaced);
+                    }
                 }
             }
             else

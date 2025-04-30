@@ -4,9 +4,13 @@ using UnityEngine;
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
+
     [HideInInspector]
     public Vector2 spawnPos;
-    
+
+    [SerializeField] private GameObject handHolder;
+    [SerializeField] private LayerMask layerMask;
+
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private bool onGround;
@@ -60,10 +64,18 @@ public class PlayerController : MonoBehaviour
         else if (horizontal < 0)
             transform.localScale = new Vector3(1, 1, 1);
 
+        //Jumping
         if (vertical > 0.1f || jump > 0.1f)
         {
             if (onGround)
                 movement.y = jumpForce;
+        }
+
+        //Autojumping
+        if (FootRaycast() && !HeadRaycast() && movement.x != 0)
+        {
+            if (onGround)
+                movement.y = jumpForce * 0.6f;//jump multiplier for autojumping
         }
 
         rb.velocity = movement;
@@ -73,7 +85,7 @@ public class PlayerController : MonoBehaviour
     {
         horizontal = Input.GetAxis("Horizontal");
         hit = Input.GetMouseButtonDown(0);
-        place = Input.GetMouseButton(1);
+        place = Input.GetMouseButtonDown(1);
 
         //set mouse pos
         mousePos.x = Mathf.RoundToInt(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - 0.5f);
@@ -82,9 +94,10 @@ public class PlayerController : MonoBehaviour
         if (Vector2.Distance(transform.position, mousePos) <= playerRange &&
             Vector2.Distance(transform.position, mousePos) > 1f)
         {
-            if (place)
+            if (place && inventory.selectedItem != null && inventory.selectedItem.itemType == ItemClass.ItemType.Block)
             {
-                terrainGenerator.CheckTile(selectedTile, mousePos.x, mousePos.y, false);
+                terrainGenerator.CheckTile(inventory.selectedItem.tile, mousePos.x, mousePos.y, false);
+                inventory.Remove(inventory.selectedItem, 1);
             }
         }
         
@@ -92,12 +105,30 @@ public class PlayerController : MonoBehaviour
         {
             if (hit)
             {
-                terrainGenerator.RemoveTile(mousePos.x, mousePos.y);
+                //terrainGenerator.RemoveTile(mousePos.x, mousePos.y);
+                terrainGenerator.BreakTile(mousePos.x, mousePos.y, inventory.selectedItem);              
             }
         }
 
         anim.SetFloat("horizontal", horizontal);
         anim.SetBool("hit", hit || place);
+
+        if (inventory.selectedItem != null)
+        {
+            handHolder.GetComponent<SpriteRenderer>().sprite = inventory.selectedItem.itemIcon;
+            if (inventory.selectedItem.itemType == ItemClass.ItemType.Block)
+            {
+                handHolder.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
+            }
+            else
+            {
+                handHolder.transform.localScale = new Vector3(-1, 1, 1);
+            }
+        }
+        else
+        {
+            handHolder.GetComponent<SpriteRenderer>().sprite = null;
+        }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -105,5 +136,25 @@ public class PlayerController : MonoBehaviour
             if (inventory.selectedItem != null)
                 inventory.selectedItem.Use(this);
         }
+    }
+
+    /*
+    private void OnValidate()
+    {
+        Debug.DrawRay(transform.position - (Vector3.up * 0.5f), -Vector2.right * transform.localScale.x, Color.white, 10f);
+        Debug.DrawRay(transform.position + (Vector3.up * 0.5f), -Vector2.right * transform.localScale.x, Color.white, 10f);
+    }
+    */
+
+    private bool FootRaycast()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position - (Vector3.up * 0.5f), -Vector2.right * transform.localScale.x, 1f/*ray length*/, layerMask);
+        return hit;
+    }
+
+    private bool HeadRaycast()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position + (Vector3.up * 0.5f), -Vector2.right * transform.localScale.x, 1f/*ray length*/, layerMask);
+        return hit;
     }
 }

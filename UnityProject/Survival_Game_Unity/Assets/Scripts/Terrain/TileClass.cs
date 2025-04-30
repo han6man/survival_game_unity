@@ -9,8 +9,12 @@ public class TileClass : ScriptableObject
     public TileClass wallVariant;
     public Sprite[] tileSprites;
     public bool inBackground = false;
-    public Sprite tileDrop;
+    public TileClass tileDrop;
+    public ItemClass.ToolType toolToBreak;
+
     public bool naturallyPlaced = true;
+    public bool isStackable = true;
+
     public ItemClass inventoryItem;
 
     public static TileClass CreateInstance(TileClass tile, bool isNaturallyPlaced)
@@ -28,6 +32,8 @@ public class TileClass : ScriptableObject
         tileSprites = tile.tileSprites;
         inBackground = tile.inBackground;
         tileDrop = tile.tileDrop;
+        isStackable = tile.isStackable;
+        toolToBreak = tile.toolToBreak;
         inventoryItem = tile.inventoryItem;
         naturallyPlaced = isNaturallyPlaced;
     }
