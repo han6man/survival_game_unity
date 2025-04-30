@@ -287,6 +287,7 @@ public class TerrainGeneration : MonoBehaviour
             for (int y = 0; y < worldSize; y++)
             {
                 curBiome = GetCurentBiome(x, y);
+
                 height = Mathf.PerlinNoise((x + seed) * terrainFreq, seed * terrainFreq) * curBiome.heightMultiplier + heightAddition;
                 if (x == worldSize / 2)
                     player.spawnPos = new Vector2(x, height + 2);
@@ -317,7 +318,10 @@ public class TerrainGeneration : MonoBehaviour
                     tileClass = curBiome.tileAtlas.grass;
                 }
 
-                if (generateCaves)
+                if (y == 0)
+                    tileClass = tileAtlas.bedrock; //spawn first layer as bedrock
+
+                if (generateCaves && y > 0)
                 {
                     if (caveNoiseTexture.GetPixel(x, y).r > 0.5f)
                     {
@@ -456,7 +460,7 @@ public class TerrainGeneration : MonoBehaviour
             if (tile.tileDrop)
             {
                 GameObject newTileDrop = Instantiate(tileDrop, new Vector2(x, y + 0.5f), Quaternion.identity);
-                newTileDrop.GetComponent<SpriteRenderer>().sprite = tile.tileDrop;
+                newTileDrop.GetComponent<SpriteRenderer>().sprite = tile.tileDrop.tileSprites[0];
                 newTileDrop.GetComponent<TileDropController>().SetInventoryItem(tile.inventoryItem);
                 newTileDrop.GetComponent<TileDropController>().SetInventory(player.inventory);
             }

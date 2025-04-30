@@ -17,7 +17,8 @@ public class ItemClass : ScriptableObject
         Weapon,
         Pickaxe,
         Hammer,
-        Axe
+        Axe,
+        Unbreakable
     }
 
     [Header("Item")]//data shared across every item
