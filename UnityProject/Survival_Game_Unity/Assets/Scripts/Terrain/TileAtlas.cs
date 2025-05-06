@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/// <summary>
+/// Set of all tiles
+/// </summary>
 [CreateAssetMenu(fileName = "TileAtlas", menuName = "Tile Atlas")]
 public class TileAtlas : ScriptableObject
 {

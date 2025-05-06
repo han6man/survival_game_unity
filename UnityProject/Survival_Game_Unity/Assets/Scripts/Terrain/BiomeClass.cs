@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using UnityEngine;
-
+/// <summary>
+/// Biome settings class
+/// </summary>
 [Serializable]
 public class BiomeClass
 {
@@ -11,8 +13,6 @@ public class BiomeClass
     public TileAtlas tileAtlas;
 
     [Header("Noise Settings")]
-    /*public float terrainFreq = 0.04f;
-    public float caveFreq = 0.08f;*/
     public Texture2D caveNoiseTexture;
 
     [Header("Generation Settings")]

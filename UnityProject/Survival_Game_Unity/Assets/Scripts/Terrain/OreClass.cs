@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using UnityEngine;
-
+/// <summary>
+/// Ore Settings class
+/// </summary>
 [Serializable]
 public class OreClass
 {

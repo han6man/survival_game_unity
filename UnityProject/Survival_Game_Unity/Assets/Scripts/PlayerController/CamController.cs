@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
-
+/// <summary>
+/// Camera Controller
+/// </summary>
 public class CamController : MonoBehaviour
 {
     [HideInInspector] public int worldSize;

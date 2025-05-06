@@ -28,12 +28,12 @@ public class TerrainGeneration : MonoBehaviour
     [Header("Tile Atlas")]
     [SerializeField] private TileAtlas tileAtlas;
     [SerializeField] private float seed;
-    [SerializeField] private BiomeClass[] biomes;
 
     [Header("Biomes")]
     [SerializeField] private float biomeFrequency;
     [SerializeField] private Gradient biomeGradient;
     [SerializeField] private Texture2D biomeMap;
+    [SerializeField] private BiomeClass[] biomes;
 
     [Header("Generation Settings")]
     [SerializeField] private int chunkSize = 20;

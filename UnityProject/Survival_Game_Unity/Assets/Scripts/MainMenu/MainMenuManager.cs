@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
+/// <summary>
+/// Main Menu Manager
+/// </summary>
 public class MainMenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject loadingScreen;

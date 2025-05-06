@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/// <summary>
+/// Crafting Recipe Class
+/// </summary>
 [CreateAssetMenu(fileName = "newCraftingRecipe", menuName = "Crafting/Recipe")]
 public class CraftingRecipeClass : ScriptableObject
 {
